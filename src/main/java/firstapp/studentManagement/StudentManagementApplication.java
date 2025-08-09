@@ -1,10 +1,11 @@
 package firstapp.studentManagement;
 
-import java.util.HashMap;
-import java.util.Map;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,33 +14,34 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class StudentManagementApplication {
 
-	private String name = "Yusi Tau";
-	private String age = "45";
+	@Autowired
+	private StudentRepository repository;
 
-	private Map<String,String> student = new HashMap<>();
 
 	public static void main(String[] args) {
 		SpringApplication.run(StudentManagementApplication.class, args);
 	}
 
-	@GetMapping("/studentInfo")
-	public Map<String,String> getInfo() {
-		return student;
+	@GetMapping("/student")
+	public String getStudent(@RequestParam String name) {
+		Student student = repository.findByName(name);
+		return student.getName() + " " + student.getAge() + "歳";
 	}
 
-	@PostMapping("/studentInfo")
-	public void setInfo(String name, String age) {
-		this.name = name;
-		this.age = age;
+	@PostMapping("/student")
+	public void setStudent(String name, int age) {
+		repository.registerStudent(name, age);
 	}
 
-	@PostMapping("/studentName")
-	public void setName(String name) {
-		this.name = name;
+	@PatchMapping("/student")
+	public void updateStudentName(String name, int age) {
+		repository.updateStudent(name, age);
 	}
 
-	@PostMapping("/studentMap")
-	public void setMap(@RequestParam String name, @RequestParam String age) {
-		this.student.put(name,age);
+	@DeleteMapping("/student")
+	public void deleteStudent(String name) {
+		repository.deleteStudent(name);
 	}
+
+
 }
