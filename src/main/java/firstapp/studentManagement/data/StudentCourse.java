@@ -1,4 +1,4 @@
-package firstapp.studentManagement;
+package firstapp.studentManagement.data;
 
 import java.time.LocalDate;
 import lombok.Getter;
