@@ -1,4 +1,4 @@
-package firstapp.studentManagement;
+package firstapp.studentManagement.data;
 
 import lombok.Getter;
 import lombok.Setter;
