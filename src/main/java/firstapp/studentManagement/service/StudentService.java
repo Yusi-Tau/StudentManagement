@@ -1,7 +1,7 @@
 package firstapp.studentManagement.service;
 
 import firstapp.studentManagement.data.Student;
-import firstapp.studentManagement.data.StudentCourse;
+import firstapp.studentManagement.data.StudentsCourses;
 import firstapp.studentManagement.repository.StudentRepository;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,7 @@ public class StudentService {
     return repository.search();
   }
 
-  public List<StudentCourse> searchStudentCourseList() {
-    return repository.courseSearch();
+  public List<StudentsCourses> searchStudentsCoursesList() {
+    return repository.searchStudentsCourses();
   }
 }
