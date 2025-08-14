@@ -1,7 +1,7 @@
 package firstapp.studentManagement.repository;
 
 import firstapp.studentManagement.data.Student;
-import firstapp.studentManagement.data.StudentCourse;
+import firstapp.studentManagement.data.StudentsCourses;
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
@@ -13,7 +13,7 @@ public interface StudentRepository {
   List<Student> search();
 
   @Select("SELECT * FROM students_courses")
-  List<StudentCourse> courseSearch();
+  List<StudentsCourses> searchStudentsCourses();
 
 
 }
