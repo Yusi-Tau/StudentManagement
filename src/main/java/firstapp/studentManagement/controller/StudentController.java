@@ -30,15 +30,16 @@ public class StudentController {
   @GetMapping("/studentList")
   public String getStudentList(Model model) {
     List<Student> students = service.searchStudentList();
-    List<StudentsCourses> studentsCourses = service.searchStudentsCourseList();
+    List<StudentsCourses> studentsCourses = service.searchStudentsCoursesList();
 
     model.addAttribute("studentList", converter.convertStudentDetails(students, studentsCourses));
     return "studentList";
   }
 
   @GetMapping("/studentsCoursesList")
-  public List<StudentsCourses> getStudentCourseList() {
-    return service.searchStudentsCourseList();
+  public String getStudentsCoursesList(Model model) {
+    model.addAttribute("studentsCoursesList", service.searchStudentsCoursesList());
+    return "studentsCoursesList";
   }
 
   @GetMapping("/newStudent")
@@ -52,7 +53,7 @@ public class StudentController {
     if (result.hasErrors()) {
       return "registerStudent";
     }
-    service.create(studentDetail);
+    service.register(studentDetail);
     return "redirect:/studentList";
   }
 

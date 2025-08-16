@@ -7,6 +7,7 @@ import firstapp.studentManagement.repository.StudentRepository;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class StudentService {
@@ -22,22 +23,13 @@ public class StudentService {
     return repository.search();
   }
 
-  public List<StudentsCourses> searchStudentsCourseList() {
+  public List<StudentsCourses> searchStudentsCoursesList() {
     return repository.searchStudentsCourses();
   }
 
-  public void create(StudentDetail detail) {
-    Student regiStudent = new Student();
-    regiStudent.setId(detail.getStudent().getId());
-    regiStudent.setName(detail.getStudent().getName());
-    regiStudent.setFurigana(detail.getStudent().getFurigana());
-    regiStudent.setNickname(detail.getStudent().getNickname());
-    regiStudent.setAddress(detail.getStudent().getAddress());
-    regiStudent.setLive(detail.getStudent().getLive());
-    regiStudent.setAge(detail.getStudent().getAge());
-    regiStudent.setGender(detail.getStudent().getGender());
-    regiStudent.setRemark(detail.getStudent().getRemark());
-    repository.create(regiStudent);
+  @Transactional
+  public void register(StudentDetail detail) {
+    repository.register(detail.getStudent());
 
   }
 }
