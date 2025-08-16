@@ -4,6 +4,7 @@ import firstapp.studentManagement.data.Student;
 import firstapp.studentManagement.data.StudentsCourses;
 import firstapp.studentManagement.domain.StudentDetail;
 import firstapp.studentManagement.repository.StudentRepository;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,8 +29,14 @@ public class StudentService {
   }
 
   @Transactional
-  public void register(StudentDetail detail) {
-    repository.register(detail.getStudent());
+  public void register(StudentDetail studentDetail) {
+    repository.register(studentDetail.getStudent());
+    for (StudentsCourses studentsCourse : studentDetail.getStudentsCourses()) {
+      studentsCourse.setStudentId(studentDetail.getStudent().getId());
+      studentsCourse.setStartDate(LocalDate.now());
+      studentsCourse.setCompletionDate(LocalDate.now().plusMonths(8));
+      repository.registerStudentsCourses(studentsCourse);
+    }
 
   }
 }
