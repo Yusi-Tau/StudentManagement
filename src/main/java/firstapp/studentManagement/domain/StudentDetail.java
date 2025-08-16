@@ -11,6 +11,6 @@ import lombok.Setter;
 public class StudentDetail {
 
   private Student student;
-  private List<StudentsCourses> studentCourse;
+  private List<StudentsCourses> studentsCourses;
 
 }

@@ -22,7 +22,7 @@ public class StudentConverter {
           .filter(studentCourse -> student.getId().equals(studentCourse.getStudentId()))
           .collect(Collectors.toList());
 
-      studentDetail.setStudentCourse(convertStudentCourses);
+      studentDetail.setStudentsCourses(convertStudentCourses);
       studentDetails.add(studentDetail);
     });
     return studentDetails;
