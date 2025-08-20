@@ -7,12 +7,19 @@ import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 @Mapper
 public interface StudentRepository {
 
+  @Select("SELECT * FROM students WHERE id = #{id}")
+  Student searchById(int id);
+
   @Select("SELECT * FROM students")
-  List<Student> search();
+  List<Student> searchAllStudents();
+
+  @Select("SELECT * FROM students_courses WHERE student_id = #{id}")
+  StudentsCourses searchByStudentId(int studentId);
 
   @Select("SELECT * FROM students_courses")
   List<StudentsCourses> searchStudentsCourses();
@@ -27,4 +34,12 @@ public interface StudentRepository {
       + "VALUES(#{studentId}, #{courseName}, #{startDate}, #{completionDate})")
   @Options(useGeneratedKeys = true, keyProperty = "id")
   void registerStudentsCourses(StudentsCourses studentsCourses);
+
+  @Update("UPDATE students "
+      + "SET name = #{name}, furigana = #{furigana}, nickname = #{nickname}, address = #{address}, live = #{live}, age = #{age}, gender = #{gender}, remark = #{remark}, is_deleted = false "
+      + "WHERE id = #{id}")
+  void updateStudent(Student student);
+
+  @Update("UPDATE students_courses SET course_name = #{courseName} WHERE student_id = #{studentId}")
+  void updateStudentsCourses(StudentsCourses studentsCourses);
 }
