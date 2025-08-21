@@ -13,13 +13,13 @@ import org.apache.ibatis.annotations.Update;
 public interface StudentRepository {
 
   @Select("SELECT * FROM students WHERE id = #{id}")
-  Student searchById(int id);
+  Student searchById(String id);
 
   @Select("SELECT * FROM students")
   List<Student> searchAllStudents();
 
-  @Select("SELECT * FROM students_courses WHERE student_id = #{id}")
-  StudentsCourses searchByStudentId(int studentId);
+  @Select("SELECT * FROM students_courses WHERE student_id = #{studentId}")
+  List<StudentsCourses> searchByStudentId(String studentId);
 
   @Select("SELECT * FROM students_courses")
   List<StudentsCourses> searchStudentsCourses();
@@ -40,6 +40,6 @@ public interface StudentRepository {
       + "WHERE id = #{id}")
   void updateStudent(Student student);
 
-  @Update("UPDATE students_courses SET course_name = #{courseName} WHERE student_id = #{studentId}")
+  @Update("UPDATE students_courses SET course_name = #{courseName} WHERE id = #{id}")
   void updateStudentsCourses(StudentsCourses studentsCourses);
 }
