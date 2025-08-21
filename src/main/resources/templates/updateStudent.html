@@ -41,10 +41,10 @@
     <input type="text" id="remark" th:field="*{student.remark}"/>
   </div>
   <div th:each="course, stat : *{studentsCourses}">
-    <label for="studentId"
-           th:for="studentCourse.__${stat.index}__.studentId">受講生ID: </label>
-    <input type="text" id="studentId" th:id="studentCourse.__${stat.index}__.studentId"
-           th:field="*{studentsCourses[__${stat.index}__].studentId}"/>
+    <label for="id"
+           th:for="studentCourse.__${stat.index}__.id">受講コースID: </label>
+    <input type="text" id="id" th:id="studentCourse.__${stat.index}__.id"
+           th:field="*{studentsCourses[__${stat.index}__].id}"/>
   </div>
   <div th:each="course, stat : *{studentsCourses}">
     <label for="courseName"

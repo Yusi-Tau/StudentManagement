@@ -5,7 +5,6 @@ import firstapp.studentManagement.data.StudentsCourses;
 import firstapp.studentManagement.domain.StudentDetail;
 import firstapp.studentManagement.repository.StudentRepository;
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,20 +40,19 @@ public class StudentService {
 
   }
 
-  public StudentDetail searchStudentById(int id) {
+  public StudentDetail searchStudentById(String id) {
     Student student = repository.searchById(id);
-    StudentsCourses courses = repository.searchByStudentId(id);
-    StudentDetail detail = new StudentDetail();
-    detail.setStudent(student);
-    detail.setStudentsCourses(Arrays.asList(courses));
-    return detail;
+    List<StudentsCourses> studentsCourses = repository.searchByStudentId(student.getId());
+    StudentDetail studentDetail = new StudentDetail();
+    studentDetail.setStudent(student);
+    studentDetail.setStudentsCourses(studentsCourses);
+    return studentDetail;
   }
 
   @Transactional
   public void update(StudentDetail studentDetail) {
     repository.updateStudent(studentDetail.getStudent());
     for (StudentsCourses studentsCourse : studentDetail.getStudentsCourses()) {
-      studentsCourse.setCourseName(studentDetail.getStudentsCourses().getFirst().getCourseName());
       repository.updateStudentsCourses(studentsCourse);
     }
   }

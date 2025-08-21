@@ -63,7 +63,7 @@ public class StudentController {
   }
 
   @GetMapping("/student/{id}")
-  public String nowStudent(@PathVariable("id") int id, Model model) {
+  public String nowStudent(@PathVariable("id") String id, Model model) {
     StudentDetail studentDetail = new StudentDetail();
     studentDetail = service.searchStudentById(id);
     model.addAttribute("studentDetail", studentDetail);
