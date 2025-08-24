@@ -79,14 +79,5 @@ public class StudentController {
     return "redirect:/studentList";
   }
 
-  @PostMapping("/deleteStudent")
-  public String deleteStudent(@ModelAttribute StudentDetail studentDetail,
-      BindingResult result) {
-    if (result.hasErrors()) {
-      return "updateStudent";
-    }
-    service.deleteStudent(studentDetail);
-    return "redirect:/studentList";
-  }
 
 }

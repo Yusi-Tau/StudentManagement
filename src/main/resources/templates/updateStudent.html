@@ -53,14 +53,13 @@
            th:field="*{studentsCourses[__${stat.index}__].courseName}"/>
   </div>
   <div>
+    <label for="isDeleted">削除:</label>
+    <input type="checkbox" id="isDeleted" th:field="*{student.deleted}"/>
+  </div>
+  <div>
     <button type="submit">更新</button>
   </div>
-  
-</form>
 
-<form th:action="@{/deleteStudent}" th:object="${studentDetail}" method="post">
-  <input type="hidden" th:field="*{student.id}"/>
-  <button type="submit">削除</button>
 </form>
 
 </body>

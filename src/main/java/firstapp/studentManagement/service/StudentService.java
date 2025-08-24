@@ -57,8 +57,4 @@ public class StudentService {
     }
   }
 
-  @Transactional
-  public void deleteStudent(StudentDetail studentDetail) {
-    repository.deleteStudent(studentDetail.getStudent());
-  }
 }
