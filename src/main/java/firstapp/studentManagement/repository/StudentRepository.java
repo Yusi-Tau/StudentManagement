@@ -12,34 +12,42 @@ import org.apache.ibatis.annotations.Update;
 @Mapper
 public interface StudentRepository {
 
-  @Select("SELECT * FROM students WHERE id = #{id}")
-  Student searchById(String id);
-
+  //受講生全件検索
   @Select("SELECT * FROM students ")
   List<Student> searchAllStudents();
 
-  @Select("SELECT * FROM students_courses WHERE student_id = #{studentId}")
-  List<StudentsCourses> searchByStudentId(String studentId);
-
+  //受講生コース全件検索
   @Select("SELECT * FROM students_courses")
-  List<StudentsCourses> searchStudentsCourses();
+  List<StudentsCourses> searchAllStudentsCourses();
 
+  //受講生情報取得処理
+  @Select("SELECT * FROM students WHERE id = #{id}")
+  Student searchStudent(String id);
+
+  //受講生情報取得処理(コース)
+  @Select("SELECT * FROM students_courses WHERE student_id = #{studentId}")
+  List<StudentsCourses> searchStudentCourses(String studentId);
+
+  //受講生登録処理
   @Insert("INSERT INTO students"
       + "(name, furigana, nickname, address, live, age, gender, remark, is_deleted) "
       + "VALUES(#{name}, #{furigana}, #{nickname}, #{address}, #{live}, #{age}, #{gender}, #{remark}, false)")
   @Options(useGeneratedKeys = true, keyProperty = "id")
-  void register(Student regiStudent);
+  void registerStudent(Student student);
 
+  //受講生登録処理(コース)
   @Insert("INSERT INTO students_courses(student_id, course_name, start_date, completion_date) "
       + "VALUES(#{studentId}, #{courseName}, #{startDate}, #{completionDate})")
   @Options(useGeneratedKeys = true, keyProperty = "id")
   void registerStudentsCourses(StudentsCourses studentsCourses);
 
+  //受講生更新処理
   @Update("UPDATE students "
       + "SET name = #{name}, furigana = #{furigana}, nickname = #{nickname}, address = #{address}, live = #{live}, age = #{age}, gender = #{gender}, remark = #{remark}, is_deleted = #{isDeleted} "
       + "WHERE id = #{id}")
   void updateStudent(Student student);
 
+  //受講生更新処理(コース)
   @Update("UPDATE students_courses SET course_name = #{courseName} WHERE id = #{id}")
   void updateStudentsCourses(StudentsCourses studentsCourses);
 
