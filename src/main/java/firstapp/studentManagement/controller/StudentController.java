@@ -1,7 +1,5 @@
 package firstapp.studentManagement.controller;
 
-import firstapp.studentManagement.controller.converter.StudentConverter;
-import firstapp.studentManagement.data.Student;
 import firstapp.studentManagement.data.StudentsCourses;
 import firstapp.studentManagement.domain.StudentDetail;
 import firstapp.studentManagement.service.StudentService;
@@ -16,25 +14,30 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * 受講生の検索や登録、更新などを行うREST APIとして実行されるControllerです。
+ */
 @RestController
 
 public class StudentController {
 
   private StudentService service;
-  private StudentConverter converter;
+
 
   @Autowired
-  public StudentController(StudentService service, StudentConverter converter) {
+  public StudentController(StudentService service) {
     this.service = service;
-    this.converter = converter;
+
   }
 
-  //受講生全件検索
+  /**
+   * 受講生一覧検索です。 全件検索を行うので、条件指定は行いません。
+   *
+   * @return 受講生一覧(全件)
+   */
   @GetMapping("/studentList")
   public List<StudentDetail> getStudentList() {
-    List<Student> students = service.searchStudentList();
-    List<StudentsCourses> studentsCourses = service.searchStudentsCoursesList();
-    return converter.convertStudentDetails(students, studentsCourses);
+    return service.searchStudentList();
   }
 
   //受講生コース全件検索
@@ -54,18 +57,20 @@ public class StudentController {
   }
 
   @PostMapping("/registerStudent")
-  public ResponseEntity<String> registerStudent(@RequestBody StudentDetail studentDetail) {
-    service.registerStudent(studentDetail);
-    return ResponseEntity.ok(studentDetail.getStudent().getName() + "さんの登録が完了しました。");
+  public ResponseEntity<StudentDetail> registerStudent(@RequestBody StudentDetail studentDetail) {
+    StudentDetail responseStudentDetail = service.registerStudent(studentDetail);
+    return ResponseEntity.ok(responseStudentDetail);
   }
 
-  //受講生情報取得処理
+  /**
+   * 受講生検索です。 IDに基づく任意の受講生の情報を取得します。
+   *
+   * @param id 受講生ID
+   * @return 受講生
+   */
   @GetMapping("/student/{id}")
-  public String nowStudent(@PathVariable("id") String id, Model model) {
-    StudentDetail studentDetail = new StudentDetail();
-    studentDetail = service.searchStudentById(id);
-    model.addAttribute("studentDetail", studentDetail);
-    return "updateStudent";
+  public StudentDetail nowStudent(@PathVariable String id) {
+    return service.searchStudentById(id);
   }
 
   //受講生更新処理
