@@ -17,12 +17,12 @@
   </tr>
   </thead>
   <tbody>
-  <tr th:each="studentsCourses : ${studentsCoursesList}">
-    <td th:text="${studentsCourses.id}">1</td>
-    <td th:text="${studentsCourses.studentId}">山田太郎</td>
-    <td th:text="${studentsCourses.courseName}">ヤマダタロウ</td>
-    <td th:text="${studentsCourses.startDate}">タロー</td>
-    <td th:text="${studentsCourses.completionDate}">taro@example.com</td>
+  <tr th:each="studentCourse : ${studentCourseList}">
+    <td th:text="${studentCourse.id}">1</td>
+    <td th:text="${studentCourse.studentId}">山田太郎</td>
+    <td th:text="${studentCourse.courseName}">ヤマダタロウ</td>
+    <td th:text="${studentCourse.startDate}">タロー</td>
+    <td th:text="${studentCourse.completionDate}">taro@example.com</td>
   </tr>
   </tbody>
 </table>
