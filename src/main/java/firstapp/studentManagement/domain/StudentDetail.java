@@ -1,7 +1,7 @@
 package firstapp.studentManagement.domain;
 
 import firstapp.studentManagement.data.Student;
-import firstapp.studentManagement.data.StudentsCourses;
+import firstapp.studentManagement.data.StudentCourse;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,6 +15,6 @@ import lombok.Setter;
 public class StudentDetail {
 
   private Student student;
-  private List<StudentsCourses> studentsCourses;
+  private List<StudentCourse> studentCourseList;
 
 }
