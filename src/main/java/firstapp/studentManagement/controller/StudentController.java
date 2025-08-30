@@ -3,6 +3,8 @@ package firstapp.studentManagement.controller;
 import firstapp.studentManagement.data.StudentCourse;
 import firstapp.studentManagement.domain.StudentDetail;
 import firstapp.studentManagement.service.StudentService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Pattern;
 import java.util.Arrays;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +21,8 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * 受講生の検索や登録、更新などを行うREST APIとして実行されるControllerです。
  */
-@Validated
 @RestController
-
+@Validated
 public class StudentController {
 
   private StudentService service;
@@ -66,7 +67,8 @@ public class StudentController {
    * @return 実行結果
    */
   @PostMapping("/registerStudent")
-  public ResponseEntity<StudentDetail> registerStudent(@RequestBody StudentDetail studentDetail) {
+  public ResponseEntity<StudentDetail> registerStudent(
+      @RequestBody @Valid StudentDetail studentDetail) {
     StudentDetail responseStudentDetail = service.registerStudent(studentDetail);
     return ResponseEntity.ok(responseStudentDetail);
   }
@@ -78,7 +80,7 @@ public class StudentController {
    * @return 受講生
    */
   @GetMapping("/student/{id}")
-  public StudentDetail nowStudent(@PathVariable String id) {
+  public StudentDetail nowStudent(@PathVariable @Pattern(regexp = "^[0-9]+$") String id) {
     return service.searchStudentById(id);
   }
 
@@ -89,7 +91,8 @@ public class StudentController {
    * @return 実行結果
    */
   @PutMapping("/updateStudent")
-  public ResponseEntity<String> updateStudent(@RequestBody StudentDetail studentDetail) {
+  public ResponseEntity<String> updateStudent(
+      @RequestBody @Valid StudentDetail studentDetail) {
     service.updateStudent(studentDetail);
     return ResponseEntity.ok(studentDetail.getStudent().getName() + "さんの更新が成功しました。");
   }

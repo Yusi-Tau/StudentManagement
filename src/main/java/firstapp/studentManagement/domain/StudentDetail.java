@@ -2,6 +2,7 @@ package firstapp.studentManagement.domain;
 
 import firstapp.studentManagement.data.Student;
 import firstapp.studentManagement.data.StudentCourse;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,7 +15,10 @@ import lombok.Setter;
 @AllArgsConstructor
 public class StudentDetail {
 
+  @Valid
   private Student student;
+
+  @Valid
   private List<StudentCourse> studentCourseList;
 
 }
