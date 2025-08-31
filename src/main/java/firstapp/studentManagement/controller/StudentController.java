@@ -1,15 +1,12 @@
 package firstapp.studentManagement.controller;
 
-import firstapp.studentManagement.data.StudentCourse;
 import firstapp.studentManagement.domain.StudentDetail;
 import firstapp.studentManagement.service.StudentService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
-import java.util.Arrays;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,7 +24,6 @@ public class StudentController {
 
   private StudentService service;
 
-
   @Autowired
   public StudentController(StudentService service) {
     this.service = service;
@@ -44,21 +40,6 @@ public class StudentController {
     return service.searchStudentList();
   }
 
-  //受講生コース全件検索
-  @GetMapping("/studentsCoursesList")
-  public String getStudentsCoursesList(Model model) {
-    model.addAttribute("studentsCoursesList", service.searchStudentCourseList());
-    return "studentsCoursesList";
-  }
-
-  //受講生登録処理
-  @GetMapping("/newStudent")
-  public String newStudent(Model model) {
-    StudentDetail studentDetail = new StudentDetail();
-    studentDetail.setStudentCourseList(Arrays.asList(new StudentCourse()));
-    model.addAttribute("studentDetail", studentDetail);
-    return "registerStudent";
-  }
 
   /**
    * 受講生詳細の登録を行います。

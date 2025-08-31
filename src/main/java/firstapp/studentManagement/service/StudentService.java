@@ -37,10 +37,6 @@ public class StudentService {
     return converter.convertStudentDetails(studentList, studentCourseList);
   }
 
-  //受講生コース全件検索
-  public List<StudentCourse> searchStudentCourseList() {
-    return repository.searchStudentCourseList();
-  }
 
   /**
    * 受講生詳細の登録を行います。 受講生と受講生コース情報を個別に登録し、受講生コース情報には受講生情報を紐づける値とコース開始日、コース終了日を設定します。
@@ -82,6 +78,9 @@ public class StudentService {
    */
   public StudentDetail searchStudentById(String id) {
     Student student = repository.searchStudent(id);
+    if (student == null) {
+      throw new NullPointerException("入力したIDの受講生が見つかりませんでした。");
+    }
     List<StudentCourse> studentCourse = repository.searchStudentCourse(student.getId());
     return new StudentDetail(student, studentCourse);
   }
