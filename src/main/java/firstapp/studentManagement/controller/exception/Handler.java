@@ -29,14 +29,14 @@ public class Handler {
   }
 
   @ExceptionHandler(ConstraintViolationException.class)
-  public ResponseEntity<String> handleException(ConstraintViolationException conEx) {
+  public ResponseEntity<String> handleConstraintException(ConstraintViolationException conEx) {
     log.error("正規表現で定められていない値が入力されています！", conEx);
     return new ResponseEntity<>("検索不能なURLです。\n"
         + "student/◯◯の◯◯には、半角数字を入力してください。", HttpStatus.BAD_REQUEST);
   }
 
   @ExceptionHandler(HttpMessageNotReadableException.class)
-  public ResponseEntity<String> Exception4(HttpMessageNotReadableException httpEx) {
+  public ResponseEntity<String> handleHttpMessageException(HttpMessageNotReadableException httpEx) {
     log.error("入力した値がサーバー側で読み取れる形ではありませんでした。", httpEx);
     return new ResponseEntity<>("入力した値がサーバーで読み取れませんでした。\n"
         + "入力内容をご確認いただき、再度入力をお試しください。",
@@ -44,7 +44,7 @@ public class Handler {
   }
 
   @ExceptionHandler(RuntimeException.class)
-  public ResponseEntity<String> Exception5(RuntimeException runEx) {
+  public ResponseEntity<String> handleRuntimeException(RuntimeException runEx) {
     log.error("予期せぬエラーが発生しました！", runEx);
     return new ResponseEntity<>("サーバーで予期せぬエラーが発生しました！",
         HttpStatus.INTERNAL_SERVER_ERROR);
