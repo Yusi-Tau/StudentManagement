@@ -2,6 +2,7 @@ package firstapp.studentManagement.controller;
 
 import firstapp.studentManagement.domain.StudentDetail;
 import firstapp.studentManagement.service.StudentService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
 import java.util.List;
@@ -35,6 +36,7 @@ public class StudentController {
    *
    * @return 受講生詳細一覧(全件)
    */
+  @Operation(summary = "一覧検索", description = "受講生の一覧を検索します。")
   @GetMapping("/studentList")
   public List<StudentDetail> getStudentList() {
     return service.searchStudentList();
@@ -47,6 +49,7 @@ public class StudentController {
    * @param studentDetail 受講生詳細
    * @return 実行結果
    */
+  @Operation(summary = "受講生登録", description = "受講生を登録します。")
   @PostMapping("/registerStudent")
   public ResponseEntity<StudentDetail> registerStudent(
       @RequestBody @Valid StudentDetail studentDetail) {
@@ -60,6 +63,7 @@ public class StudentController {
    * @param id 受講生ID
    * @return 受講生
    */
+  @Operation(summary = "受講生検索", description = "IDに紐づく受講生の情報を取得します。")
   @GetMapping("/student/{id}")
   public StudentDetail nowStudent(@PathVariable @Pattern(regexp = "^[0-9]+$") String id) {
     return service.searchStudentById(id);
@@ -71,6 +75,7 @@ public class StudentController {
    * @param studentDetail 受講生詳細
    * @return 実行結果
    */
+  @Operation(summary = "受講生更新", description = "登録済みの受講生の情報を更新します。")
   @PutMapping("/updateStudent")
   public ResponseEntity<String> updateStudent(
       @RequestBody @Valid StudentDetail studentDetail) {
