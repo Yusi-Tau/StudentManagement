@@ -14,7 +14,7 @@ import lombok.Setter;
 
 public class Student {
 
-  @Pattern(regexp = "^[0-9]+$")
+  @Pattern(regexp = "^[0-9]+$", message = "数字のみ入力するようにしてください。")
   private String id;
 
   @NotBlank
