@@ -55,9 +55,9 @@ class StudentConverterTest {
     List<StudentCourse> studentCourseList = new ArrayList<>(
         List.of(studentCourse1, studentCourse2, studentCourse3));
 
-    List<StudentDetail> studentDetails = sut.convertStudentDetails(studentList, studentCourseList);
+    List<StudentDetail> actual = sut.convertStudentDetails(studentList, studentCourseList);
 
-    List<StudentCourse> resultStudentCourse = studentDetails.get(0).getStudentCourseList();
+    List<StudentCourse> resultStudentCourse = actual.get(0).getStudentCourseList();
     assertThat(resultStudentCourse.size()).isEqualTo(2);
 
   }
