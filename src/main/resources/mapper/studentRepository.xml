@@ -13,6 +13,12 @@
     SELECT * FROM students_courses
   </select>
 
+  <!-- 受講生のコース情報の申込状況の全件検索 -->
+  <select id="searchStudentCourseStatusList"
+    resultType="firstapp.studentManagement.data.StudentCourseStatus">
+    SELECT * FROM students_courses_statuses
+  </select>
+
   <!-- 受講生の検索 -->
   <select id="searchStudent" resultType="firstapp.studentManagement.data.Student">
     SELECT * FROM students WHERE id = #{id}
@@ -21,6 +27,12 @@
   <!-- 受講生IDに紐づく受講生コース情報の検索 -->
   <select id="searchStudentCourse" resultType="firstapp.studentManagement.data.StudentCourse">
     SELECT * FROM students_courses WHERE student_id = #{studentId}
+  </select>
+
+  <!-- 受講生コースIDに紐づくコースの申込状況の検索 -->
+  <select id="searchStudentCourseStatus"
+    resultType="firstapp.studentManagement.data.StudentCourseStatus">
+    SELECT * FROM students_courses_statuses WHERE student_course_id = #{studentCourseId}
   </select>
 
   <!-- 受講生の新規登録 IDは自動採番 -->
@@ -38,6 +50,14 @@
     VALUES(#{studentId}, #{courseName}, #{startDate}, #{completionDate})
   </insert>
 
+  <!-- 受講生コース情報の申込状況の新規登録 IDは自動採番 -->
+  <insert id="registerStudentCourseStatus"
+    parameterType="firstapp.studentManagement.data.StudentCourseStatus" useGeneratedKeys="true"
+    keyProperty="id">
+    INSERT INTO students_courses_statuses(student_course_id, status) VALUES(#{studentCourseId},
+    #{status})
+  </insert>
+
   <!-- 受講生の更新 -->
   <update id="updateStudent" parameterType="firstapp.studentManagement.data.Student">
     UPDATE students
@@ -49,5 +69,16 @@
   <!-- 受講生コース情報のコース名の更新 -->
   <update id="updateStudentCourse" parameterType="firstapp.studentManagement.data.StudentCourse">
     UPDATE students_courses SET course_name = #{courseName} WHERE id = #{id}
+  </update>
+
+  <!-- 受講生コースIDに対応する受講生コース情報の検索 -->
+  <select id="searchStudentCourseOnly" resultType="firstapp.studentManagement.data.StudentCourse">
+    SELECT * FROM students_courses WHERE id = #{studentCourseId}
+  </select>
+
+  <!-- 受講生コース情報に付随する申込状況の更新 -->
+  <update id="updateStudentCourseStatus"
+    parameterType="firstapp.studentManagement.data.StudentCourseStatus">
+    UPDATE students_courses_statuses SET status = #{status} WHERE id = #{id}
   </update>
 </mapper>

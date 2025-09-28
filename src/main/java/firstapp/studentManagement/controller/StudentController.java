@@ -1,5 +1,6 @@
 package firstapp.studentManagement.controller;
 
+import firstapp.studentManagement.data.StudentCourseStatus;
 import firstapp.studentManagement.domain.StudentDetail;
 import firstapp.studentManagement.service.StudentService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -70,7 +71,7 @@ public class StudentController {
   }
 
   /**
-   * 受講生詳細の更新を行います。 キャンセルフラグの更新もここで行います。(論理削除)
+   * 受講生詳細の更新を行います(申込状況を除く)。 キャンセルフラグの更新もここで行います。(論理削除)
    *
    * @param studentDetail 受講生詳細
    * @return 実行結果
@@ -81,6 +82,20 @@ public class StudentController {
       @RequestBody @Valid StudentDetail studentDetail) {
     service.updateStudent(studentDetail);
     return ResponseEntity.ok(studentDetail.getStudent().getName() + "さんの更新が成功しました。");
+  }
+
+  /**
+   *
+   * @param studentCourseStatus 受講生コース情報の申込状況
+   * @return 実行結果
+   */
+  @Operation(summary = "コースの申込状況更新", description = "登録済みのコースの申込状況を更新します。")
+  @PutMapping("/updateStudentCourseStatus")
+  public ResponseEntity<String> updateStudentCourseStatus(
+      @RequestBody @Valid StudentCourseStatus studentCourseStatus) {
+    service.updateStudentCourseStatus(studentCourseStatus);
+    return ResponseEntity.ok(
+        "申込状況が" + studentCourseStatus.getStatus() + "に正常に更新されました。");
   }
 
 

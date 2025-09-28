@@ -1,8 +1,11 @@
 package firstapp.studentManagement.service;
 
 import firstapp.studentManagement.controller.converter.StudentConverter;
+import firstapp.studentManagement.controller.converter.StudentCourseConverter;
 import firstapp.studentManagement.data.Student;
 import firstapp.studentManagement.data.StudentCourse;
+import firstapp.studentManagement.data.StudentCourseStatus;
+import firstapp.studentManagement.data.StudentCourseStatus.Status;
 import firstapp.studentManagement.domain.StudentDetail;
 import firstapp.studentManagement.repository.StudentRepository;
 import java.time.LocalDate;
@@ -19,11 +22,14 @@ public class StudentService {
 
   private StudentRepository repository;
   private StudentConverter converter;
+  private StudentCourseConverter courseConverter;
 
   @Autowired
-  public StudentService(StudentRepository repository, StudentConverter converter) {
+  public StudentService(StudentRepository repository, StudentConverter converter,
+      StudentCourseConverter courseConverter) {
     this.repository = repository;
     this.converter = converter;
+    this.courseConverter = courseConverter;
   }
 
   /**
@@ -34,7 +40,10 @@ public class StudentService {
   public List<StudentDetail> searchStudentList() {
     List<Student> studentList = repository.searchAllStudent();
     List<StudentCourse> studentCourseList = repository.searchStudentCourseList();
-    return converter.convertStudentDetails(studentList, studentCourseList);
+    List<StudentCourseStatus> studentCourseStatusList = repository.searchStudentCourseStatusList();
+    List<StudentCourse> convertStudentCourseList = courseConverter.convertStudentCourseList(
+        studentCourseList, studentCourseStatusList);
+    return converter.convertStudentDetails(studentList, convertStudentCourseList);
   }
 
 
@@ -47,54 +56,107 @@ public class StudentService {
   @Transactional
   public StudentDetail registerStudent(StudentDetail studentDetail) {
     Student student = studentDetail.getStudent();
-
     repository.registerStudent(student);
+
     studentDetail.getStudentCourseList().forEach(studentCourse -> {
-      initStudentCourse(studentCourse, student);
+      StudentCourseStatus studentCourseStatus = new StudentCourseStatus();
+      initStudentCourse(studentCourse, studentCourseStatus, student.getId());
       repository.registerStudentCourse(studentCourse);
+      studentCourseStatus.setStudentCourseId(studentCourse.getId());
+      repository.registerStudentCourseStatus(studentCourseStatus);
+      studentCourse.setCourseStatus(studentCourseStatus);
     });
     return studentDetail;
   }
 
   /**
-   * 受講生コース情報を登録する際の初期情報を設定する。
+   * 受講生コース情報、申込状況を登録する際の初期情報を設定します。
    *
    * @param studentCourse 受講生コース情報
-   * @param student       受講生
+   * @param studentId     受講生ID
    */
-  void initStudentCourse(StudentCourse studentCourse, Student student) {
+  void initStudentCourse(StudentCourse studentCourse, StudentCourseStatus studentCourseStatus,
+      String studentId) {
     LocalDate now = LocalDate.now();
 
-    studentCourse.setStudentId(student.getId());
+    studentCourse.setStudentId(studentId);
     studentCourse.setStartDate(now.plusMonths(1));
     studentCourse.setCompletionDate(now.plusMonths(8));
+    studentCourseStatus.setStatus(Status.仮申込);
   }
 
   /**
    * 受講生詳細検索です。 IDに紐づく受講生情報を取得した後、その受講生に紐づく受講生コース情報を取得して設定します。
    *
-   * @param id 　受講生ID
+   * @param id 受講生ID
    * @return 受講生詳細
    */
   public StudentDetail searchStudentById(String id) {
     Student student = repository.searchStudent(id);
-    if (student == null) {
-      throw new NullPointerException("入力したIDの受講生が見つかりませんでした。");
-    }
-    List<StudentCourse> studentCourse = repository.searchStudentCourse(student.getId());
-    return new StudentDetail(student, studentCourse);
+    List<StudentCourse> studentCourseList = repository.searchStudentCourse(student.getId());
+    studentCourseList.forEach(studentCourse -> {
+      StudentCourseStatus studentCourseStatus = repository.searchStudentCourseStatus(
+          studentCourse.getId());
+      studentCourse.setCourseStatus(studentCourseStatus);
+    });
+    return new StudentDetail(student, studentCourseList);
   }
 
   /**
-   * 受講生詳細の更新を行います。 受講生と受講生コース情報をそれぞれ更新します。
+   * 受講生詳細の更新を行います。 受講生と受講生コース情報のコース名をそれぞれ更新します。
    *
    * @param studentDetail 受講生詳細
    */
   @Transactional
   public void updateStudent(StudentDetail studentDetail) {
     repository.updateStudent(studentDetail.getStudent());
-    studentDetail.getStudentCourseList()
-        .forEach(studentCourse -> repository.updateStudentCourse(studentCourse));
+    for (StudentCourse studentCourse : studentDetail.getStudentCourseList()) {
+      repository.updateStudentCourse(studentCourse);
+    }
+  }
+
+  /**
+   * 受講生コース情報の申込状況の更新を行います。 受講生コースIDを使ってコースの開始日、終了日を取得して、更新内容が正しいかを判定します。
+   *
+   * @param studentCourseStatus 受講生コース情報の申込状況
+   */
+  @Transactional
+  public void updateStudentCourseStatus(StudentCourseStatus studentCourseStatus) {
+    StudentCourseStatus dbStudentCourseStatus = repository.searchStudentCourseStatus(
+        studentCourseStatus.getStudentCourseId());
+    if (!dbStudentCourseStatus.getId().equals(studentCourseStatus.getId())) {
+      throw new IllegalArgumentException("IDが間違っています!");
+    }
+    StudentCourse studentCourse = repository.searchStudentCourseOnly(
+        studentCourseStatus.getStudentCourseId());
+    checkStatus(studentCourseStatus, studentCourse);
+    repository.updateStudentCourseStatus(studentCourseStatus);
+  }
+
+  /**
+   * statusに入力された内容が受講中、受講終了の場合、現在の日付と受講開始部、終了日を比較して入力が正しいかの確認を行います。
+   *
+   * @param studentCourseStatus 受講生コース情報の申込状況
+   * @param studentCourse       受講生コース情報
+   */
+  void checkStatus(StudentCourseStatus studentCourseStatus,
+      StudentCourse studentCourse) {
+    Status status = studentCourseStatus.getStatus();
+    LocalDate now = LocalDate.now();
+    LocalDate startDate = studentCourse.getStartDate();
+    LocalDate completionDate = studentCourse.getCompletionDate();
+    switch (status) {
+      case 受講中 -> {
+        if (now.isBefore(startDate) || now.isAfter(completionDate)) {
+          throw new IllegalArgumentException("現在は受講期間内の日付ではありません!");
+        }
+      }
+      case 受講終了 -> {
+        if (now.isBefore(completionDate)) {
+          throw new IllegalArgumentException("まだ受講終了予定日前の日付です!");
+        }
+      }
+    }
   }
 
 }

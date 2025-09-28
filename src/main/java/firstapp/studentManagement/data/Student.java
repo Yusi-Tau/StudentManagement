@@ -27,7 +27,7 @@ public class Student {
   private String nickname;
 
   @NotBlank
-  @Email
+  @Email(message = "メールアドレスの形式になっていません!")
   private String address;
 
   @NotBlank

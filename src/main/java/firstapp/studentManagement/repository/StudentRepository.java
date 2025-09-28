@@ -2,6 +2,7 @@ package firstapp.studentManagement.repository;
 
 import firstapp.studentManagement.data.Student;
 import firstapp.studentManagement.data.StudentCourse;
+import firstapp.studentManagement.data.StudentCourseStatus;
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -26,6 +27,13 @@ public interface StudentRepository {
   List<StudentCourse> searchStudentCourseList();
 
   /**
+   * 受講生のコース情報の申込状況の全件検索を行います。
+   *
+   * @return 受講生のコース情報の申込状況(全件)
+   */
+  List<StudentCourseStatus> searchStudentCourseStatusList();
+
+  /**
    * 受講生の検索を行います。
    *
    * @param id 受講性ID
@@ -42,6 +50,14 @@ public interface StudentRepository {
   List<StudentCourse> searchStudentCourse(String studentId);
 
   /**
+   * 受講生コースIDに紐づくコースの申込状況を検索します。
+   *
+   * @param studentCourseId 受講生コースID
+   * @return 受講生コースIDに紐づくコースの申込状況
+   */
+  StudentCourseStatus searchStudentCourseStatus(String studentCourseId);
+
+  /**
    * 受講生を新規登録します。 IDに関しては自動採番を行う。
    *
    * @param student 受講生
@@ -54,6 +70,13 @@ public interface StudentRepository {
    * @param studentCourse 受講生コース情報
    */
   void registerStudentCourse(StudentCourse studentCourse);
+
+  /**
+   * 受講生コース情報の申込状況を新規登録します。IDに関しては自動採番を行う。
+   *
+   * @param studentCourseStatus 受講生コース情報の申込状況
+   */
+  void registerStudentCourseStatus(StudentCourseStatus studentCourseStatus);
 
   /**
    * 受講生を更新します。
@@ -69,4 +92,20 @@ public interface StudentRepository {
    */
   void updateStudentCourse(StudentCourse studentCourse);
 
+  /**
+   * 受講生コースIDに対応するコース情報を検索します。
+   *
+   * @param studentCourseId 受講生コースID
+   * @return 受講生コースIDに対応するコース情報
+   */
+
+  StudentCourse searchStudentCourseOnly(String studentCourseId);
+
+  /**
+   * 受講生コース情報に付随する申込状況を更新します。
+   *
+   * @param studentCourseStatus 受講生コース情報の申込状況
+   */
+
+  void updateStudentCourseStatus(StudentCourseStatus studentCourseStatus);
 }
