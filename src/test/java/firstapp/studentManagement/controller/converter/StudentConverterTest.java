@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import firstapp.studentManagement.data.Student;
 import firstapp.studentManagement.data.StudentCourse;
+import firstapp.studentManagement.data.StudentCourseStatus;
+import firstapp.studentManagement.data.StudentCourseStatus.Status;
 import firstapp.studentManagement.domain.StudentDetail;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -40,18 +42,33 @@ class StudentConverterTest {
     studentCourse1.setCourseName("Javaコース");
     studentCourse1.setStartDate(LocalDate.of(2025, 4, 1));
     studentCourse1.setCompletionDate(LocalDate.of(2025, 12, 31));
+    StudentCourseStatus studentCourseStatus1 = new StudentCourseStatus();
+    studentCourseStatus1.setId("1");
+    studentCourseStatus1.setStudentCourseId("1");
+    studentCourseStatus1.setStatus(Status.本申込);
+    studentCourse1.setCourseStatus(studentCourseStatus1);
     StudentCourse studentCourse2 = new StudentCourse();
     studentCourse2.setId("2");
     studentCourse2.setStudentId("1");
     studentCourse2.setCourseName("AWSコース");
     studentCourse2.setStartDate(LocalDate.of(2025, 4, 1));
     studentCourse2.setCompletionDate(LocalDate.of(2025, 12, 31));
+    StudentCourseStatus studentCourseStatus2 = new StudentCourseStatus();
+    studentCourseStatus2.setId("2");
+    studentCourseStatus2.setStudentCourseId("2");
+    studentCourseStatus2.setStatus(Status.仮申込);
+    studentCourse2.setCourseStatus(studentCourseStatus2);
     StudentCourse studentCourse3 = new StudentCourse();
     studentCourse3.setId("3");
     studentCourse3.setStudentId("2");
     studentCourse3.setCourseName("デザインコース");
     studentCourse3.setStartDate(LocalDate.of(2025, 4, 1));
     studentCourse3.setCompletionDate(LocalDate.of(2025, 12, 31));
+    StudentCourseStatus studentCourseStatus3 = new StudentCourseStatus();
+    studentCourseStatus3.setId("3");
+    studentCourseStatus3.setStudentCourseId("3");
+    studentCourseStatus3.setStatus(Status.受講中);
+    studentCourse3.setCourseStatus(studentCourseStatus3);
     List<StudentCourse> studentCourseList = new ArrayList<>(
         List.of(studentCourse1, studentCourse2, studentCourse3));
 

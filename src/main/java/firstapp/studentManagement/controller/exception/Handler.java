@@ -16,7 +16,7 @@ public class Handler {
   @ExceptionHandler(NullPointerException.class)
   public ResponseEntity<String> handleNullException(NullPointerException nullEx) {
     log.error("データが存在しませんでした！", nullEx);
-    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(nullEx.getMessage());
+    return new ResponseEntity<>("データが見つかりませんでした!", HttpStatus.BAD_REQUEST);
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -41,6 +41,12 @@ public class Handler {
     return new ResponseEntity<>("入力した値がサーバーで読み取れませんでした。\n"
         + "入力内容をご確認いただき、再度入力をお試しください。",
         HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler(IllegalArgumentException.class)
+  public ResponseEntity<String> handleArgumentException(IllegalArgumentException ex) {
+    log.error("入力された値が他のデータとの整合性が取れていません！", ex);
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
   }
 
   @ExceptionHandler(RuntimeException.class)

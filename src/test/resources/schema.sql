@@ -20,3 +20,10 @@ course_name VARCHAR(100) DEFAULT NULL,
 start_date DATE DEFAULT NULL,
 completion_date DATE DEFAULT NULL
 );
+
+CREATE TABLE students_courses_statuses
+(
+id INT AUTO_INCREMENT PRIMARY KEY,
+student_course_id INT DEFAULT NULL,
+status VARCHAR(10) DEFAULT NULL
+);

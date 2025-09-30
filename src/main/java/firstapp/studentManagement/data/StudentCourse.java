@@ -23,4 +23,6 @@ public class StudentCourse {
 
   private LocalDate completionDate;
 
+  private StudentCourseStatus courseStatus;
+
 }
