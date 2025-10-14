@@ -15,6 +15,7 @@ import firstapp.studentManagement.data.StudentCourseStatus;
 import firstapp.studentManagement.data.StudentCourseStatus.Status;
 import firstapp.studentManagement.domain.StudentDetail;
 import firstapp.studentManagement.repository.StudentRepository;
+import firstapp.studentManagement.search.StudentSearchWords;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -69,22 +70,97 @@ class StudentServiceTest {
   }
 
   @Test
+  void 受講生詳細の全件検索または条件検索_コース名または申込状況の指定なし_リポジトリとコンバーターの処理が適切に呼び出せていること() {
+    StudentSearchWords searchWords = new StudentSearchWords();
+    List<StudentDetail> studentDetails = new ArrayList<>();
+    when(repository.searchSelectStudentDetail(searchWords)).thenReturn(studentDetails);
+
+    sut.searchSelectStudent(searchWords);
+
+    verify(repository, times(1)).searchSelectStudentDetail(searchWords);
+
+  }
+
+  @Test
+  void 受講生詳細の全件検索または条件検索_コース名の条件指定＿対象外のコース情報も閲覧設定ON_リポジトリとコンバーターの処理が適切に呼び出せていること() {
+    StudentSearchWords searchWords = new StudentSearchWords();
+    searchWords.setCourseName("Javaコース");
+    searchWords.setCourseNameAllShow(true);
+    Student student = new Student();
+    student.setId("1");
+    List<StudentCourse> studentCourseList = new ArrayList<>();
+    StudentDetail studentDetail = new StudentDetail(student, studentCourseList);
+    List<StudentDetail> studentDetails = new ArrayList<>(List.of(studentDetail));
+    List<StudentCourse> studentCourseListById = new ArrayList<>();
+    List<StudentDetail> convertDetail = new ArrayList<>();
+    when(repository.searchSelectStudentDetail(searchWords)).thenReturn(studentDetails);
+    when(repository.searchStudentCourse(student.getId())).thenReturn(studentCourseListById);
+    when(
+        converter.convertCourseAllShowStudentDetails(studentDetails,
+            studentCourseListById)).thenReturn(
+        convertDetail);
+
+    sut.searchSelectStudent(searchWords);
+
+    verify(repository, times(1)).searchSelectStudentDetail(searchWords);
+    verify(repository, times(1)).searchStudentCourse(student.getId());
+    verify(converter, times(1)).convertCourseAllShowStudentDetails(studentDetails,
+        studentCourseListById);
+  }
+
+  @Test
+  void 受講生詳細の全件検索または条件検索_申込状況の条件指定＿対象外のコース情報も閲覧設定ON_リポジトリとコンバーターの処理が適切に呼び出せていること() {
+    StudentSearchWords searchWords = new StudentSearchWords();
+    searchWords.setCourseStatus("仮申込");
+    searchWords.setCourseNameAllShow(true);
+    Student student = new Student();
+    student.setId("1");
+    List<StudentCourse> studentCourseList = new ArrayList<>();
+    StudentDetail studentDetail = new StudentDetail(student, studentCourseList);
+    List<StudentDetail> studentDetails = new ArrayList<>(List.of(studentDetail));
+    List<StudentCourse> studentCourseListById = new ArrayList<>();
+    List<StudentDetail> convertDetail = new ArrayList<>();
+    when(repository.searchSelectStudentDetail(searchWords)).thenReturn(studentDetails);
+    when(repository.searchStudentCourse(student.getId())).thenReturn(studentCourseListById);
+    when(
+        converter.convertCourseAllShowStudentDetails(studentDetails,
+            studentCourseListById)).thenReturn(
+        convertDetail);
+
+    sut.searchSelectStudent(searchWords);
+
+    verify(repository, times(1)).searchSelectStudentDetail(searchWords);
+    verify(repository, times(1)).searchStudentCourse(student.getId());
+    verify(converter, times(1)).convertCourseAllShowStudentDetails(studentDetails,
+        studentCourseListById);
+  }
+
+  @Test
+  void 受講生詳細の条件検索で2つの年齢条件入力時にその2つの数値の範囲指定が適切ではない時に例外処理にかかっていること() {
+    StudentSearchWords searchWords = new StudentSearchWords();
+    searchWords.setAgeFrom(30);
+    searchWords.setAgeTo(25);
+
+    IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+        () -> sut.searchSelectStudent(searchWords));
+
+    assertThat(ex.getMessage()).isEqualTo("年齢の範囲指定が不正です。");
+  }
+
+
+  @Test
   void 受講生詳細の検索＿リポジトリの処理が適切に呼び出せていること() {
     Student student = new Student();
     student.setId("1");
     StudentCourse studentCourse = new StudentCourse();
     List<StudentCourse> studentCourseList = new ArrayList<>(List.of(studentCourse));
-    StudentCourseStatus studentCourseStatus = new StudentCourseStatus();
     when(repository.searchStudent(student.getId())).thenReturn(student);
     when(repository.searchStudentCourse(student.getId())).thenReturn(studentCourseList);
-    when(repository.searchStudentCourseStatus(studentCourseList.get(0).getId())).thenReturn(
-        studentCourseStatus);
 
     sut.searchStudentById(student.getId());
 
     verify(repository, times(1)).searchStudent(student.getId());
     verify(repository, times(1)).searchStudentCourse(student.getId());
-    verify(repository, times(1)).searchStudentCourseStatus(studentCourseList.get(0).getId());
   }
 
   @Test

@@ -3,6 +3,124 @@
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="firstapp.studentManagement.repository.StudentRepository">
 
+  <resultMap id="studentDetail" type="firstapp.studentManagement.domain.StudentDetail">
+    <id column="student_id" property="student.id"/>
+    <association property="student" javaType="firstapp.studentManagement.data.Student">
+      <id column="student_id" property="id"/>
+      <result column="name" property="name"/>
+      <result column="furigana" property="furigana"/>
+      <result column="nickname" property="nickname"/>
+      <result column="address" property="address"/>
+      <result column="live" property="live"/>
+      <result column="age" property="age"/>
+      <result column="gender" property="gender"/>
+      <result column="remark" property="remark"/>
+      <result column="is_deleted" property="isDeleted"/>
+    </association>
+
+    <collection property="studentCourseList" ofType="firstapp.studentManagement.data.StudentCourse">
+      <id column="course_id" property="id"/>
+      <result column="course_student_id" property="studentId"/>
+      <result column="course_name" property="courseName"/>
+      <result column="start_date" property="startDate"/>
+      <result column="completion_date" property="completionDate"/>
+
+      <association property="courseStatus"
+        javaType="firstapp.studentManagement.data.StudentCourseStatus">
+        <id column="status_id" property="id"/>
+        <result column="status_course_id" property="studentCourseId"/>
+        <result column="course_status" property="status"/>
+      </association>
+    </collection>
+  </resultMap>
+
+  <resultMap id="studentCourse" type="firstapp.studentManagement.data.StudentCourse">
+    <id column="course_id" property="id"/>
+    <result column="course_student_id" property="studentId"/>
+    <result column="course_name" property="courseName"/>
+    <result column="start_date" property="startDate"/>
+    <result column="completion_date" property="completionDate"/>
+
+    <association property="courseStatus"
+      javaType="firstapp.studentManagement.data.StudentCourseStatus">
+      <id column="status_id" property="id"/>
+      <result column="status_course_id" property="studentCourseId"/>
+      <result column="course_status" property="status"/>
+    </association>
+  </resultMap>
+
+  <select id="searchSelectStudentDetail" resultMap="studentDetail">
+    SELECT
+    s.id AS student_id,
+    s.name,
+    s.furigana,
+    s.nickname,
+    s.address,
+    s.live,
+    s.age,
+    s.gender,
+    s.remark,
+    s.is_deleted,
+
+    sc.id AS course_id,
+    sc.student_id AS course_student_id,
+    sc.course_name,
+    sc.start_date,
+    sc.completion_date,
+
+    st.id AS status_id,
+    st.student_course_id AS status_course_id,
+    st.status AS course_status
+    FROM students s
+    LEFT JOIN students_courses sc ON s.id = sc.student_id
+    LEFT JOIN students_courses_statuses st ON sc.id = st.student_course_id
+    <where>
+      <if test="id != null">
+        student_id = #{id}
+      </if>
+      <if test="name != null and name.trim() != ''">
+        AND name LIKE CONCAT ('%', #{name}, '%')
+      </if>
+      <if test="furigana != null and furigana.trim() != ''">
+        AND furigana LIKE CONCAT(#{furigana}, '%')
+      </if>
+      <if test="nickname != null and nickname.trim() != ''">
+        AND nickname LIKE CONCAT(#{nickname}, '%')
+      </if>
+      <if test="live != null and live.trim() != ''">
+        AND live LIKE CONCAT(#{live}, '%')
+      </if>
+      <if test="ageFrom != null">
+        AND age &gt;= #{ageFrom}
+      </if>
+      <if test="ageTo != null">
+        AND age &lt; #{ageTo}
+      </if>
+      <if test="gender != null and gender.trim() != ''">
+        AND gender = #{gender}
+      </if>
+      <if test="isDeleted != null">
+        AND is_deleted = #{isDeleted}
+      </if>
+      <if test="courseName != null and courseName.trim() != ''">
+        AND course_name LIKE CONCAT('%', #{courseName}, '%')
+      </if>
+      <if test="courseStatus != null and courseStatus.trim() != ''">
+        AND status LIKE CONCAT ('%', #{courseStatus}, '%')
+      </if>
+    </where>
+    <choose>
+      <when test="ageFrom != null">
+        ORDER BY age ASC, course_id ASC
+      </when>
+      <when test="ageTo != null">
+        ORDER BY age DESC, course_id ASC
+      </when>
+      <otherwise>
+        ORDER BY student_id ASC, course_id ASC
+      </otherwise>
+    </choose>
+  </select>
   <!-- 受講生の全件検索 -->
   <select id="searchAllStudent" resultType="firstapp.studentManagement.data.Student">
     SELECT * FROM students
@@ -24,9 +142,21 @@
     SELECT * FROM students WHERE id = #{id}
   </select>
 
-  <!-- 受講生IDに紐づく受講生コース情報の検索 -->
-  <select id="searchStudentCourse" resultType="firstapp.studentManagement.data.StudentCourse">
-    SELECT * FROM students_courses WHERE student_id = #{studentId}
+  <!-- 受講生IDに紐づく受講生コース情報(申込状況を含む)の検索 -->
+  <select id="searchStudentCourse" resultMap="studentCourse">
+    SELECT
+    sc.id AS course_id,
+    sc.student_id AS course_student_id,
+    sc.course_name,
+    sc.start_date,
+    sc.completion_date,
+
+    st.id AS status_id,
+    st.student_course_id AS status_course_id,
+    st.status AS course_status
+    FROM students_courses sc
+    LEFT JOIN students_courses_statuses st ON sc.id = st.student_course_id
+    WHERE student_id = #{studentId}
   </select>
 
   <!-- 受講生コースIDに紐づくコースの申込状況の検索 -->

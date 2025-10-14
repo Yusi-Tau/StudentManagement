@@ -74,8 +74,35 @@ class StudentConverterTest {
 
     List<StudentDetail> actual = sut.convertStudentDetails(studentList, studentCourseList);
 
-    List<StudentCourse> resultStudentCourse = actual.get(0).getStudentCourseList();
-    assertThat(resultStudentCourse.size()).isEqualTo(2);
+    List<StudentCourse> resultStudentCourseList = actual.get(0).getStudentCourseList();
+    assertThat(resultStudentCourseList.size()).isEqualTo(2);
+
+  }
+
+  @Test
+  void 元の受講生詳細リストから新しい詳細リストへの詰め替えができていること() {
+    Student student = new Student();
+    student.setId("1");
+    StudentCourse studentCourse = new StudentCourse();
+    studentCourse.setStudentId("1");
+    studentCourse.setCourseName("Javaコース");
+    List<StudentCourse> studentCourseList = List.of(studentCourse);
+    StudentDetail studentDetail = new StudentDetail(student, studentCourseList);
+    List<StudentDetail> studentDetails = List.of(studentDetail);
+    StudentCourse studentCourseById1 = new StudentCourse();
+    studentCourseById1.setStudentId("1");
+    studentCourseById1.setCourseName("Javaコース");
+    StudentCourse studentCourseById2 = new StudentCourse();
+    studentCourseById2.setStudentId("1");
+    studentCourseById2.setCourseName("AWSコース");
+    List<StudentCourse> studentCourseListById = List.of(studentCourseById1, studentCourseById2);
+
+    List<StudentDetail> actual = sut.convertCourseAllShowStudentDetails(studentDetails,
+        studentCourseListById);
+
+    List<StudentCourse> resultStudentCourseList = actual.get(0).getStudentCourseList();
+    assertThat(resultStudentCourseList.size()).isEqualTo(2);
+
 
   }
 

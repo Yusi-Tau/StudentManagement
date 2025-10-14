@@ -6,6 +6,8 @@ import firstapp.studentManagement.data.Student;
 import firstapp.studentManagement.data.StudentCourse;
 import firstapp.studentManagement.data.StudentCourseStatus;
 import firstapp.studentManagement.data.StudentCourseStatus.Status;
+import firstapp.studentManagement.domain.StudentDetail;
+import firstapp.studentManagement.search.StudentSearchWords;
 import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -37,6 +39,142 @@ class StudentRepositoryTest {
   }
 
   @Test
+  void 条件指定なしの場合に受講生詳細の全件取得が行えること() {
+    StudentSearchWords searchWords = new StudentSearchWords();
+
+    List<StudentDetail> actual = sut.searchSelectStudentDetail(searchWords);
+    assertThat(actual.size()).isEqualTo(5);
+  }
+
+  @Test
+  void 受講生IDを条件指定にした場合にそれに該当する受講生詳細が検索できていること() {
+    StudentSearchWords searchWords = new StudentSearchWords();
+    searchWords.setId(1);
+
+    List<StudentDetail> actual = sut.searchSelectStudentDetail(searchWords);
+    Student resultStudent = actual.getLast().getStudent();
+    assertThat(resultStudent.getName()).isEqualTo("佐藤太郎");
+  }
+
+  @Test
+  void 名前を条件指定にした場合に部分一致検索ができていること() {
+    StudentSearchWords searchWords = new StudentSearchWords();
+    searchWords.setName("藤");
+
+    List<StudentDetail> actual = sut.searchSelectStudentDetail(searchWords);
+    assertThat(actual.size()).isEqualTo(1);
+  }
+
+  @Test
+  void フリガナを条件指定にした場合に前方一致検索ができていること() {
+    StudentSearchWords searchWords = new StudentSearchWords();
+    searchWords.setFurigana("イ");
+
+    List<StudentDetail> actual = sut.searchSelectStudentDetail(searchWords);
+    assertThat(actual.size()).isEqualTo(1);
+  }
+
+  @Test
+  void ニックネームを条件指定にした場合に前方一致検索ができていること() {
+    StudentSearchWords searchWords = new StudentSearchWords();
+    searchWords.setNickname("ピ");
+
+    List<StudentDetail> actual = sut.searchSelectStudentDetail(searchWords);
+    assertThat(actual.size()).isEqualTo(1);
+  }
+
+  @Test
+  void 住所を条件指定にした場合に前方一致検索ができていること() {
+    StudentSearchWords searchWords = new StudentSearchWords();
+    searchWords.setLive("愛知");
+
+    List<StudentDetail> actual = sut.searchSelectStudentDetail(searchWords);
+    assertThat(actual.size()).isEqualTo(1);
+  }
+
+  @Test
+  void 一つめの年齢のみを条件指定にした場合にその年齢以上の受講生詳細が検索できていること() {
+    StudentSearchWords searchWords = new StudentSearchWords();
+    searchWords.setAgeFrom(21);
+
+    List<StudentDetail> actual = sut.searchSelectStudentDetail(searchWords);
+    assertThat(actual.size()).isEqualTo(4);
+  }
+
+  @Test
+  void 二つめの年齢のみを条件指定にした場合にその年齢未満の受講生詳細が検索できていること() {
+    StudentSearchWords searchWords = new StudentSearchWords();
+    searchWords.setAgeTo(30);
+
+    List<StudentDetail> actual = sut.searchSelectStudentDetail(searchWords);
+    assertThat(actual.size()).isEqualTo(3);
+  }
+
+  @Test
+  void 両方の年齢を条件指定にした場合に一つめの年齢以上＿二つめの年齢未満の受講生詳細が検索できていること() {
+    StudentSearchWords searchWords = new StudentSearchWords();
+    searchWords.setAgeFrom(20);
+    searchWords.setAgeTo(30);
+
+    List<StudentDetail> actual = sut.searchSelectStudentDetail(searchWords);
+    assertThat(actual.size()).isEqualTo(2);
+  }
+
+  @Test
+  void 性別を条件指定にした場合にその性別の受講生詳細が検索できていること() {
+    StudentSearchWords searchWords = new StudentSearchWords();
+    searchWords.setGender("その他");
+
+    List<StudentDetail> actual = sut.searchSelectStudentDetail(searchWords);
+    assertThat(actual.size()).isEqualTo(1);
+  }
+
+  @Test
+  void 論理削除を条件指定にした場合にそれに該当する受講生詳細が検索できていること() {
+    StudentSearchWords searchWords = new StudentSearchWords();
+    searchWords.setIsDeleted(true);
+
+    List<StudentDetail> actual = sut.searchSelectStudentDetail(searchWords);
+    assertThat(actual.size()).isEqualTo(2);
+  }
+
+  @Test
+  void コース名を条件指定にした場合に部分一致検索ができていること() {
+    StudentSearchWords searchWords = new StudentSearchWords();
+    searchWords.setCourseName("マーケ");
+
+    List<StudentDetail> actual = sut.searchSelectStudentDetail(searchWords);
+    assertThat(actual.size()).isEqualTo(1);
+  }
+
+  @Test
+  void 申込状況を条件指定にした場合に部分一致検索ができていること() {
+    StudentSearchWords searchWords = new StudentSearchWords();
+    searchWords.setCourseStatus("終了");
+
+    List<StudentDetail> actual = sut.searchSelectStudentDetail(searchWords);
+    assertThat(actual.size()).isEqualTo(1);
+  }
+
+  @Test
+  void 複数の条件指定を行った場合に該当する受講生が検索できていること() {
+    StudentSearchWords searchWords = new StudentSearchWords();
+    searchWords.setName("木");
+    searchWords.setFurigana("サ");
+    searchWords.setNickname("サ");
+    searchWords.setLive("愛知");
+    searchWords.setAgeFrom(20);
+    searchWords.setAgeTo(31);
+    searchWords.setGender("女");
+    searchWords.setIsDeleted(false);
+    searchWords.setCourseName("AWS");
+    searchWords.setCourseStatus("本");
+
+    List<StudentDetail> actual = sut.searchSelectStudentDetail(searchWords);
+    assertThat(actual.size()).isEqualTo(1);
+  }
+
+  @Test
   void 受講生IDを使った受講生検索が行えること() {
     String id = "1";
 
@@ -49,7 +187,9 @@ class StudentRepositoryTest {
     String id = "1";
 
     List<StudentCourse> actual = sut.searchStudentCourse(id);
+    StudentCourseStatus resultStudentCourseStatus = actual.get(0).getCourseStatus();
     assertThat(actual.get(0).getCourseName()).isEqualTo("Javaコース");
+    assertThat(resultStudentCourseStatus.getStatus()).isEqualTo(Status.仮申込);
   }
 
   @Test

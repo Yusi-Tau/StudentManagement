@@ -2,6 +2,7 @@ package firstapp.studentManagement.controller;
 
 import firstapp.studentManagement.data.StudentCourseStatus;
 import firstapp.studentManagement.domain.StudentDetail;
+import firstapp.studentManagement.search.StudentSearchWords;
 import firstapp.studentManagement.service.StudentService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -43,6 +44,18 @@ public class StudentController {
     return service.searchStudentList();
   }
 
+  /**
+   * 受講生詳細の一覧検索です。全件検索、または指定された条件に従った条件検索を行います。
+   *
+   * @param searchWords 検索条件として使用する検索ワード一覧
+   * @return 受講生詳細一覧(全件または条件)
+   */
+  @Operation(summary = "一覧検索", description = "受講生の全件検索、または条件検索を行います。")
+  @PostMapping("/studentSearch")
+  public List<StudentDetail> getSelectStudent(
+      @RequestBody StudentSearchWords searchWords) {
+    return service.searchSelectStudent(searchWords);
+  }
 
   /**
    * 受講生詳細の登録を行います。

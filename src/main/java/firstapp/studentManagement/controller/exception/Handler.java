@@ -32,7 +32,7 @@ public class Handler {
   public ResponseEntity<String> handleConstraintException(ConstraintViolationException conEx) {
     log.error("正規表現で定められていない値が入力されています！", conEx);
     return new ResponseEntity<>("検索不能なURLです。\n"
-        + "student/◯◯の◯◯には、半角数字を入力してください。", HttpStatus.BAD_REQUEST);
+        + "IDや年齢などには、半角数字を入力してください。", HttpStatus.BAD_REQUEST);
   }
 
   @ExceptionHandler(HttpMessageNotReadableException.class)
