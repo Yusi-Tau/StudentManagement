@@ -8,7 +8,9 @@ import firstapp.studentManagement.data.StudentCourseStatus;
 import firstapp.studentManagement.data.StudentCourseStatus.Status;
 import firstapp.studentManagement.domain.StudentDetail;
 import firstapp.studentManagement.repository.StudentRepository;
+import firstapp.studentManagement.search.StudentSearchWords;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,6 +46,36 @@ public class StudentService {
     List<StudentCourse> convertStudentCourseList = courseConverter.convertStudentCourseList(
         studentCourseList, studentCourseStatusList);
     return converter.convertStudentDetails(studentList, convertStudentCourseList);
+  }
+
+
+  /**
+   * 受講生詳細の全件検索を行います。全件検索、または指定された条件に従った条件検索を行います。
+   *
+   * @param searchWords 検索条件として使用する検索ワード一覧
+   * @return 受講生詳細一覧(全件または条件)
+   */
+  public List<StudentDetail> searchSelectStudent(StudentSearchWords searchWords) {
+    Integer ageFrom = searchWords.getAgeFrom();
+    Integer ageTo = searchWords.getAgeTo();
+    if (ageFrom != null && ageTo != null && ageFrom >= ageTo) {
+      throw new IllegalArgumentException("年齢の範囲指定が不正です。");
+    }
+    List<StudentDetail> studentDetails = repository.searchSelectStudentDetail(searchWords);
+    String courseName = searchWords.getCourseName();
+    String status = searchWords.getCourseStatus();
+    boolean courseNameAllShow = searchWords.isCourseNameAllShow();
+    List<StudentCourse> studentCourseList = new ArrayList<>();
+    if ((courseName != null && !courseName.isBlank() || status != null && !status.isBlank())
+        && courseNameAllShow && !studentDetails.isEmpty()) {
+      for (StudentDetail studentDetail : studentDetails) {
+        String studentId = studentDetail.getStudent().getId();
+        studentCourseList.addAll(repository.searchStudentCourse(studentId));
+      }
+      studentDetails = converter.convertCourseAllShowStudentDetails(studentDetails,
+          studentCourseList);
+    }
+    return studentDetails;
   }
 
 
@@ -94,11 +126,6 @@ public class StudentService {
   public StudentDetail searchStudentById(String id) {
     Student student = repository.searchStudent(id);
     List<StudentCourse> studentCourseList = repository.searchStudentCourse(student.getId());
-    studentCourseList.forEach(studentCourse -> {
-      StudentCourseStatus studentCourseStatus = repository.searchStudentCourseStatus(
-          studentCourse.getId());
-      studentCourse.setCourseStatus(studentCourseStatus);
-    });
     return new StudentDetail(student, studentCourseList);
   }
 

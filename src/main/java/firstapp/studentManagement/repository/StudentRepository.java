@@ -3,6 +3,8 @@ package firstapp.studentManagement.repository;
 import firstapp.studentManagement.data.Student;
 import firstapp.studentManagement.data.StudentCourse;
 import firstapp.studentManagement.data.StudentCourseStatus;
+import firstapp.studentManagement.domain.StudentDetail;
+import firstapp.studentManagement.search.StudentSearchWords;
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -34,6 +36,15 @@ public interface StudentRepository {
   List<StudentCourseStatus> searchStudentCourseStatusList();
 
   /**
+   * 受講生詳細の全件検索、または条件検索を行います。
+   *
+   * @param searchWords 検索条件に使用する検索ワード一覧
+   * @return 受講生詳細一覧(全件または条件)
+   */
+  List<StudentDetail> searchSelectStudentDetail(StudentSearchWords searchWords);
+
+
+  /**
    * 受講生の検索を行います。
    *
    * @param id 受講性ID
@@ -42,10 +53,10 @@ public interface StudentRepository {
   Student searchStudent(String id);
 
   /**
-   * 受講生IDに紐づく受講生コース情報を検索します。
+   * 受講生IDに紐づく受講生コース情報(申込状況を含む)を検索します。
    *
    * @param studentId 受講生ID
-   * @return 受講生IDに紐づく受講生コース情報
+   * @return 受講生IDに紐づく受講生コース情報(申込状況を含む)
    */
   List<StudentCourse> searchStudentCourse(String studentId);
 

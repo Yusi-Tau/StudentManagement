@@ -48,6 +48,31 @@ class StudentControllerTest {
   }
 
   @Test
+  void 受講生詳細の一覧検索の条件検索が実行できて空のリストが返ってくること()
+      throws Exception {
+    mockMvc.perform(post("/studentSearch").contentType(MediaType.APPLICATION_JSON).content(
+        """
+            {
+                  "id": "1",
+                  "name": "中",
+                  "furigana": "ナ",
+                  "nickname": "タ",
+                  "live": "東",
+                  "ageFrom": "20",
+                  "ageTo": "30",
+                  "gender": "男",
+                  "deleted": "false",
+                  "courseName": "Java",
+                  "courseStats": "仮",
+                  "courseNameAllShow": "true"
+            }
+            """
+    )).andExpect(status().isOk());
+
+    verify(service, times(1)).searchSelectStudent(any());
+  }
+
+  @Test
   void 受講生詳細の検索が実行できて空のリストが返ってくること() throws Exception {
     String id = "2";
     mockMvc.perform(get("/student/{id}", id))
