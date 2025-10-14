@@ -110,6 +110,9 @@
       </if>
     </where>
     <choose>
+      <when test="ageFrom != null and ageTo != null">
+        ORDER BY age DESC, course_id ASC
+      </when>
       <when test="ageFrom != null">
         ORDER BY age ASC, course_id ASC
       </when>
